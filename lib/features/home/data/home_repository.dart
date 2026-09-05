@@ -45,16 +45,18 @@ class HomeRepository {
 
   Future<List<DealModel>> getDeals() async {
     await Future.delayed(const Duration(milliseconds: 300));
-    return const[
-    DealModel(name: 'Fresh Shrimp (Tiger)',
-   imageUrl: 'https://images.unsplash.com/photo-1565680018434-b513d5e5fd47?w=700',
-   price: 'BDT 950',
-    oldPrice: 'BDT 1,120',
-     discount: '15% OFF',
-      rating: 4.6,
-       reviews:128,
-       ),
-          DealModel(
+    return const [
+      DealModel(
+        name: 'Fresh Shrimp (Tiger)',
+        imageUrl:
+            'https://images.unsplash.com/photo-1565680018434-b513d5e5fd47?w=700',
+        price: 'BDT 950',
+        oldPrice: 'BDT 1,120',
+        discount: '15% OFF',
+        rating: 4.6,
+        reviews: 128,
+      ),
+      DealModel(
         name: 'Premium Cotton Shirts',
 
         imageUrl:
@@ -70,7 +72,16 @@ class HomeRepository {
 
         reviews: 96,
       ),
-
+      DealModel(
+        name: 'Handmade Jute Handicraft',
+        imageUrl:
+            'https://images.unsplash.com/photo-1606722590583-6951b5ea92ad?w=700',
+        price: 'BDT 650',
+        oldPrice: 'BDT 800',
+        discount: '18% OFF',
+        rating: 4.8,
+        reviews: 74,
+      ),
     ];
   }
 }
