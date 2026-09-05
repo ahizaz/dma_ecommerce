@@ -2,12 +2,16 @@ import 'package:dma_e_commerce/features/home/presentation/providers/home_provide
 import 'package:dma_e_commerce/features/home/presentation/widgets/bottom_nav.dart';
 import 'package:dma_e_commerce/features/home/presentation/widgets/category_grid.dart';
 import 'package:dma_e_commerce/features/home/presentation/widgets/deals_section.dart';
+import 'package:dma_e_commerce/features/home/presentation/widgets/feature_products.dart';
+
 import 'package:dma_e_commerce/features/home/presentation/widgets/hero_banner.dart';
 import 'package:dma_e_commerce/features/home/presentation/widgets/search_bar.dart';
 import 'package:dma_e_commerce/features/home/presentation/widgets/section_header.dart';
 import 'package:dma_e_commerce/features/home/presentation/widgets/seller_banner.dart';
 import 'package:dma_e_commerce/features/home/presentation/widgets/top_header.dart';
 import 'package:dma_e_commerce/features/home/presentation/widgets/trade_actions.dart';
+
+import 'package:dma_e_commerce/features/home/presentation/widgets/trade_opportunity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -15,44 +19,68 @@ class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(
+    BuildContext context,
+    WidgetRef ref,
+  ) {
     final state = ref.watch(homeProvider);
 
     return Scaffold(
       body: SafeArea(
         bottom: false,
+
         child: Column(
           children: [
+
             // =========================
             // HEADER
             // =========================
+
             Padding(
-              padding: const EdgeInsets.fromLTRB(10, 8, 10, 0),
+              padding:
+                  const EdgeInsets.fromLTRB(
+                10,
+                8,
+                10,
+                0,
+              ),
+
               child: Column(
                 children: [
+
+                  // LOGO
+
                   Row(
                     children: [
+
                       const Text(
                         'Trade',
+
                         style: TextStyle(
-                          color: Color(0xFF009B62),
+                          color:
+                              Color(0xFF009B62),
                           fontSize: 19,
-                          fontWeight: FontWeight.w900,
+                          fontWeight:
+                              FontWeight.w900,
                         ),
                       ),
 
                       const Text(
                         'Bridge',
+
                         style: TextStyle(
-                          color: Color(0xFF22282C),
+                          color:
+                              Color(0xFF22282C),
                           fontSize: 19,
-                          fontWeight: FontWeight.w900,
+                          fontWeight:
+                              FontWeight.w900,
                         ),
                       ),
 
                       const Spacer(),
                     ],
                   ),
+
 
                   const TopHeader(),
 
@@ -63,41 +91,147 @@ class HomeScreen extends ConsumerWidget {
               ),
             ),
 
+
             // =========================
             // BODY
             // =========================
+
             Expanded(
               child: state.isLoading
-                  ? const Center(child: CircularProgressIndicator())
+
+                  ? const Center(
+                      child:
+                          CircularProgressIndicator(),
+                    )
+
                   : RefreshIndicator(
+
                       onRefresh: () {
-                        return ref.read(homeProvider.notifier).loadHome();
+                        return ref
+                            .read(
+                              homeProvider.notifier,
+                            )
+                            .loadHome();
                       },
+
                       child: ListView(
-                        padding: const EdgeInsets.fromLTRB(10, 10, 10, 12),
+
+                        padding:
+                            const EdgeInsets.fromLTRB(
+                          10,
+                          10,
+                          10,
+                          12,
+                        ),
+
                         children: [
-                          HeroBanner(),
+
+                          // =========================
+                          // HERO
+                          // =========================
+
+                          const HeroBanner(),
+
                           const SizedBox(height: 8),
-                          TradeActions(),
+
+
+                          // =========================
+                          // TRADE ACTIONS
+                          // =========================
+
+                          const TradeActions(),
+
                           const SizedBox(height: 11),
 
-                          SectionHeader(
-                            title: 'Browse Categories',
 
-                            onViewAll: () {},
-                          ),
-                          const SizedBox(height: 7),
-                          CategoryGrid(categories: state.categories),
-                          SizedBox(height: 10),
+                          // =========================
+                          // FEATURED PRODUCTS
+                          // =========================
+
                           SectionHeader(
-                            title: "Today's Best Deals",
+                            title:
+                                'Featured Products',
 
                             onViewAll: () {},
                           ),
 
                           const SizedBox(height: 7),
-                          DealsSection(deals: state.deals),
+
+                          FeaturedProducts(
+                            products:
+                                state.featuredProducts,
+                          ),
+
+                          const SizedBox(height: 12),
+
+
+                          // =========================
+                          // TRADE OPPORTUNITIES
+                          // =========================
+
+                          SectionHeader(
+                            title:
+                                'Trade Opportunities',
+
+                            onViewAll: () {},
+                          ),
+
+                          const SizedBox(height: 7),
+
+                          TradeOpportunities(
+                            opportunities:
+                                state.tradeOpportunities,
+                          ),
+
+                          const SizedBox(height: 12),
+
+
+                          // =========================
+                          // BROWSE CATEGORIES
+                          // =========================
+
+                          SectionHeader(
+                            title:
+                                'Browse Categories',
+
+                            onViewAll: () {},
+                          ),
+
+                          const SizedBox(height: 7),
+
+                          CategoryGrid(
+                            categories:
+                                state.categories,
+                          ),
+
+                          const SizedBox(height: 10),
+
+
+                          // =========================
+                          // TODAY'S BEST DEALS
+                          // =========================
+
+                          SectionHeader(
+                            title:
+                                "Today's Best Deals",
+
+                            onViewAll: () {},
+                          ),
+
+                          const SizedBox(height: 7),
+
+                          DealsSection(
+                            deals:
+                                state.deals,
+                          ),
+
                           const SizedBox(height: 9),
+
+
+                          // =========================
+                          // SELLER BANNER
+                          // =========================
+
                           const SellerBanner(),
                         ],
                       ),
@@ -106,10 +240,25 @@ class HomeScreen extends ConsumerWidget {
           ],
         ),
       ),
-      bottomNavigationBar: HomeBottomNav(
-        selectedIndex: state.selectedBottomIndex,
+
+
+      // =========================
+      // BOTTOM NAVIGATION
+      // =========================
+
+      bottomNavigationBar:
+          HomeBottomNav(
+
+        selectedIndex:
+            state.selectedBottomIndex,
+
         onChanged: (index) {
-          ref.read(homeProvider.notifier).changeBottomNav(index);
+
+          ref
+              .read(
+                homeProvider.notifier,
+              )
+              .changeBottomNav(index);
         },
       ),
     );
