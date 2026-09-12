@@ -5,11 +5,13 @@ import '../../../../core/theme/app_colors.dart';
 class HomeBottomNav extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onChanged;
+  final int cartCount;
 
   const HomeBottomNav({
     super.key,
     required this.selectedIndex,
     required this.onChanged,
+    this.cartCount = 0,
   });
 
   @override
@@ -46,7 +48,7 @@ class HomeBottomNav extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       if (isCart)
-                        _CartNavButton(active: active)
+                        _CartNavButton(active: active, cartCount: cartCount)
                       else
                         Icon(
                           item.$1,
@@ -78,8 +80,9 @@ class HomeBottomNav extends StatelessWidget {
 
 class _CartNavButton extends StatelessWidget {
   final bool active;
+  final int cartCount;
 
-  const _CartNavButton({required this.active});
+  const _CartNavButton({required this.active, required this.cartCount});
 
   @override
   Widget build(BuildContext context) {
@@ -123,8 +126,8 @@ class _CartNavButton extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: Colors.white, width: 2),
               ),
-              child: const Text(
-                '0',
+              child: Text(
+                '$cartCount',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 9,

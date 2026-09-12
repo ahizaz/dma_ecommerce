@@ -38,6 +38,20 @@ class HomeScreen extends ConsumerWidget {
               )
             : state.selectedBottomIndex == 2
             ? CartScreen(
+                products: state.cartProducts,
+                quantities: state.cartQuantities,
+                onRemoveProduct: (product) {
+                  ref.read(homeProvider.notifier).removeFromCart(product);
+                },
+                onIncreaseQuantity: (product) {
+                  ref.read(homeProvider.notifier).increaseQuantity(product);
+                },
+                onDecreaseQuantity: (product) {
+                  ref.read(homeProvider.notifier).decreaseQuantity(product);
+                },
+                onClearCart: () {
+                  ref.read(homeProvider.notifier).clearCart();
+                },
                 onBrowseProducts: () {
                   ref.read(homeProvider.notifier).changeBottomNav(1);
                 },
@@ -130,13 +144,40 @@ class HomeScreen extends ConsumerWidget {
                                 SectionHeader(
                                   title: 'Featured Products',
 
-                                  onViewAll: () {},
+                                  onViewAll: () => ref
+                                      .read(homeProvider.notifier)
+                                      .changeBottomNav(1),
                                 ),
 
                                 const SizedBox(height: 7),
 
                                 FeaturedProducts(
                                   products: state.featuredProducts,
+                                  favoriteProducts: state.favoriteProducts,
+                                  onToggleFavorite: (productName) {
+                                    ref
+                                        .read(homeProvider.notifier)
+                                        .toggleFavorite(productName);
+                                  },
+                                  onAddToCart: (product) {
+                                    ref
+                                        .read(homeProvider.notifier)
+                                        .addToCart(product);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          '${product.name} added to cart',
+                                        ),
+                                        duration: const Duration(seconds: 2),
+                                        action: SnackBarAction(
+                                          label: 'VIEW CART',
+                                          onPressed: () => ref
+                                              .read(homeProvider.notifier)
+                                              .changeBottomNav(2),
+                                        ),
+                                      ),
+                                    );
+                                  },
                                 ),
 
                                 const SizedBox(height: 12),
@@ -147,7 +188,9 @@ class HomeScreen extends ConsumerWidget {
                                 SectionHeader(
                                   title: 'Trade Opportunities',
 
-                                  onViewAll: () {},
+                                  onViewAll: () => ref
+                                      .read(homeProvider.notifier)
+                                      .changeBottomNav(1),
                                 ),
 
                                 const SizedBox(height: 7),
@@ -164,7 +207,9 @@ class HomeScreen extends ConsumerWidget {
                                 SectionHeader(
                                   title: 'Browse Categories',
 
-                                  onViewAll: () {},
+                                  onViewAll: () => ref
+                                      .read(homeProvider.notifier)
+                                      .changeBottomNav(1),
                                 ),
 
                                 const SizedBox(height: 7),
@@ -179,12 +224,29 @@ class HomeScreen extends ConsumerWidget {
                                 SectionHeader(
                                   title: "Today's Best Deals",
 
-                                  onViewAll: () {},
+                                  onViewAll: () => ref
+                                      .read(homeProvider.notifier)
+                                      .changeBottomNav(1),
                                 ),
 
                                 const SizedBox(height: 7),
 
-                                DealsSection(deals: state.deals),
+                                DealsSection(
+                                  deals: state.deals,
+                                  onAddToCart: (deal) {
+                                    ref
+                                        .read(homeProvider.notifier)
+                                        .addDealToCart(deal);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          '${deal.name} added to cart',
+                                        ),
+                                        duration: const Duration(seconds: 2),
+                                      ),
+                                    );
+                                  },
+                                ),
 
                                 const SizedBox(height: 9),
 
@@ -209,6 +271,7 @@ class HomeScreen extends ConsumerWidget {
         onChanged: (index) {
           ref.read(homeProvider.notifier).changeBottomNav(index);
         },
+        cartCount: state.cartProducts.length,
       ),
     );
   }

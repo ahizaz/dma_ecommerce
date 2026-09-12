@@ -4,10 +4,16 @@ import 'package:flutter/material.dart';
 
 class FeaturedProducts extends StatelessWidget {
   final List<FeaturedProductModel> products;
+  final ValueChanged<FeaturedProductModel>? onAddToCart;
+  final Set<String> favoriteProducts;
+  final ValueChanged<String>? onToggleFavorite;
 
   const FeaturedProducts({
     super.key,
     required this.products,
+    this.onAddToCart,
+    this.favoriteProducts = const {},
+    this.onToggleFavorite,
   });
 
   @override
@@ -17,11 +23,13 @@ class FeaturedProducts extends StatelessWidget {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: products.length,
-        separatorBuilder: (_, __) =>
-            const SizedBox(width: 9),
+        separatorBuilder: (_, __) => const SizedBox(width: 9),
         itemBuilder: (_, index) {
           return _FeaturedProductCard(
             product: products[index],
+            onAddToCart: onAddToCart,
+            isFavorite: favoriteProducts.contains(products[index].name),
+            onToggleFavorite: onToggleFavorite,
           );
         },
       ),
@@ -29,50 +37,43 @@ class FeaturedProducts extends StatelessWidget {
   }
 }
 
-
-class _FeaturedProductCard
-    extends StatelessWidget {
-
+class _FeaturedProductCard extends StatelessWidget {
   final FeaturedProductModel product;
+  final ValueChanged<FeaturedProductModel>? onAddToCart;
+  final bool isFavorite;
+  final ValueChanged<String>? onToggleFavorite;
 
   const _FeaturedProductCard({
     required this.product,
+    this.onAddToCart,
+    this.isFavorite = false,
+    this.onToggleFavorite,
   });
-
 
   @override
   Widget build(BuildContext context) {
-
     return Container(
       width: 180,
 
       decoration: BoxDecoration(
         color: Colors.white,
 
-        borderRadius:
-            BorderRadius.circular(11),
+        borderRadius: BorderRadius.circular(11),
 
-        border: Border.all(
-          color: AppColors.border,
-        ),
+        border: Border.all(color: AppColors.border),
       ),
 
       child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
 
         children: [
-
           // ==========================
           // PRODUCT IMAGE
           // ==========================
-
           Stack(
             children: [
-
               ClipRRect(
-                borderRadius:
-                    const BorderRadius.vertical(
+                borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(11),
                 ),
 
@@ -85,33 +86,25 @@ class _FeaturedProductCard
 
                   fit: BoxFit.cover,
 
-                  errorBuilder:
-                      (_, __, ___) {
-
+                  errorBuilder: (_, __, ___) {
                     return Container(
                       height: 91,
 
-                      color:
-                          Colors.grey.shade200,
+                      color: Colors.grey.shade200,
 
-                      child: const Icon(
-                        Icons.image_outlined,
-                      ),
+                      child: const Icon(Icons.image_outlined),
                     );
                   },
                 ),
               ),
 
-
               // TAG
-
               Positioned(
                 top: 6,
                 left: 6,
 
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(
+                  padding: const EdgeInsets.symmetric(
                     horizontal: 6,
                     vertical: 3,
                   ),
@@ -119,8 +112,7 @@ class _FeaturedProductCard
                   decoration: BoxDecoration(
                     color: AppColors.green,
 
-                    borderRadius:
-                        BorderRadius.circular(5),
+                    borderRadius: BorderRadius.circular(5),
                   ),
 
                   child: Text(
@@ -129,16 +121,13 @@ class _FeaturedProductCard
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 7,
-                      fontWeight:
-                          FontWeight.w700,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ),
               ),
 
-
               // FAVORITE
-
               Positioned(
                 right: 6,
                 top: 6,
@@ -147,75 +136,64 @@ class _FeaturedProductCard
                   width: 25,
                   height: 25,
 
-                  decoration:
-                      const BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: Colors.white,
                     shape: BoxShape.circle,
                   ),
 
-                  child: const Icon(
-                    Icons.favorite_border_rounded,
-                    size: 15,
-                    color: AppColors.muted,
+                  child: IconButton(
+                    onPressed: onToggleFavorite == null
+                        ? null
+                        : () => onToggleFavorite!(product.name),
+                    padding: EdgeInsets.zero,
+                    icon: Icon(
+                      isFavorite
+                          ? Icons.favorite_rounded
+                          : Icons.favorite_border_rounded,
+                      size: 15,
+                      color: isFavorite ? AppColors.red : AppColors.muted,
+                    ),
                   ),
                 ),
               ),
             ],
           ),
 
-
           // ==========================
           // PRODUCT INFO
           // ==========================
-
           Padding(
-            padding:
-                const EdgeInsets.fromLTRB(
-              8,
-              6,
-              8,
-              6,
-            ),
+            padding: const EdgeInsets.fromLTRB(8, 6, 8, 6),
 
             child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
 
               children: [
-
                 Text(
                   product.name,
 
                   maxLines: 1,
 
-                  overflow:
-                      TextOverflow.ellipsis,
+                  overflow: TextOverflow.ellipsis,
 
                   style: const TextStyle(
                     fontSize: 10,
-                    fontWeight:
-                        FontWeight.w700,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
 
-
                 const SizedBox(height: 3),
 
-
                 // PRICE
-
                 Row(
                   children: [
-
                     Text(
                       product.price,
 
                       style: const TextStyle(
-                        color:
-                            AppColors.green,
+                        color: AppColors.green,
                         fontSize: 11,
-                        fontWeight:
-                            FontWeight.w900,
+                        fontWeight: FontWeight.w900,
                       ),
                     ),
 
@@ -225,44 +203,31 @@ class _FeaturedProductCard
                       product.unit,
 
                       style: const TextStyle(
-                        color:
-                            AppColors.muted,
+                        color: AppColors.muted,
                         fontSize: 7,
                       ),
                     ),
                   ],
                 ),
 
-
                 const SizedBox(height: 3),
 
-
                 // SUPPLIER
-
                 Text(
                   product.supplier,
 
                   maxLines: 1,
 
-                  overflow:
-                      TextOverflow.ellipsis,
+                  overflow: TextOverflow.ellipsis,
 
-                  style: const TextStyle(
-                    color:
-                        AppColors.muted,
-                    fontSize: 7,
-                  ),
+                  style: const TextStyle(color: AppColors.muted, fontSize: 7),
                 ),
-
 
                 const SizedBox(height: 3),
 
-
                 // RATING + VIEW
-
                 Row(
                   children: [
-
                     const Icon(
                       Icons.star_rounded,
                       size: 11,
@@ -274,43 +239,45 @@ class _FeaturedProductCard
                     Text(
                       '${product.rating}',
 
-                      style:
-                          const TextStyle(
+                      style: const TextStyle(
                         fontSize: 8,
-                        fontWeight:
-                            FontWeight.w600,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
 
                     const Spacer(),
 
-
-                    Container(
-                      padding:
-                          const EdgeInsets
-                              .symmetric(
-                        horizontal: 7,
-                        vertical: 4,
-                      ),
-
-                      decoration:
-                          BoxDecoration(
-                        color:
-                            AppColors.lightGreen,
-
-                        borderRadius:
-                            BorderRadius.circular(6),
-                      ),
-
-                      child: const Text(
-                        'View',
-
-                        style: TextStyle(
-                          color:
-                              AppColors.green,
-                          fontSize: 7,
-                          fontWeight:
-                              FontWeight.w800,
+                    InkWell(
+                      onTap: onAddToCart == null
+                          ? null
+                          : () => onAddToCart!(product),
+                      borderRadius: BorderRadius.circular(6),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 7,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.lightGreen,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: const Row(
+                          children: [
+                            Icon(
+                              Icons.add_shopping_cart_rounded,
+                              size: 10,
+                              color: AppColors.green,
+                            ),
+                            SizedBox(width: 2),
+                            Text(
+                              'Add',
+                              style: TextStyle(
+                                color: AppColors.green,
+                                fontSize: 7,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),

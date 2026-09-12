@@ -1,169 +1,107 @@
 import 'package:dma_e_commerce/features/home/data/home_models.dart';
 import 'package:flutter/material.dart';
 
-
-
 import '../../../../core/theme/app_colors.dart';
 
 class DealsSection extends StatelessWidget {
-
   final List<DealModel> deals;
+  final ValueChanged<DealModel>? onAddToCart;
 
-
-  const DealsSection({
-
-    super.key,
-
-    required this.deals,
-
-  });
-
+  const DealsSection({super.key, required this.deals, this.onAddToCart});
 
   @override
   Widget build(BuildContext context) {
-
     return SizedBox(
-
       height: 175,
 
       child: ListView.separated(
+        scrollDirection: Axis.horizontal,
 
-        scrollDirection:
-            Axis.horizontal,
+        itemCount: deals.length,
 
-        itemCount:
-            deals.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 8),
 
-        separatorBuilder:
-            (_, __) =>
-                const SizedBox(width: 8),
-
-        itemBuilder:
-            (_, index) {
-
-          return _DealCard(
-            deal: deals[index],
-          );
+        itemBuilder: (_, index) {
+          return _DealCard(deal: deals[index], onAddToCart: onAddToCart);
         },
       ),
     );
   }
 }
 
-
-class _DealCard
-    extends StatelessWidget {
-
+class _DealCard extends StatelessWidget {
   final DealModel deal;
+  final ValueChanged<DealModel>? onAddToCart;
 
-
-  const _DealCard({
-    required this.deal,
-  });
-
+  const _DealCard({required this.deal, this.onAddToCart});
 
   @override
   Widget build(BuildContext context) {
-
     return Container(
-
       width: 142,
 
       decoration: BoxDecoration(
-
         color: Colors.white,
 
-        borderRadius:
-            BorderRadius.circular(9),
+        borderRadius: BorderRadius.circular(9),
 
-        border:
-            Border.all(
-          color:
-              AppColors.border,
-        ),
+        border: Border.all(color: AppColors.border),
       ),
 
       child: Column(
-
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
 
         children: [
-
           Stack(
-
             children: [
-
               ClipRRect(
-
-                borderRadius:
-                    const BorderRadius.vertical(
+                borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(9),
                 ),
 
                 child: Image.network(
-
                   deal.imageUrl,
 
-                  width:
-                      double.infinity,
+                  width: double.infinity,
 
                   height: 80,
 
-                  fit:
-                      BoxFit.cover,
+                  fit: BoxFit.cover,
 
-                  errorBuilder:
-                      (_, __, ___) {
-
+                  errorBuilder: (_, __, ___) {
                     return Container(
-
                       height: 80,
 
-                      color:
-                          Colors.grey.shade200,
+                      color: Colors.grey.shade200,
 
-                      child: const Icon(
-                        Icons.image_outlined,
-                      ),
+                      child: const Icon(Icons.image_outlined),
                     );
                   },
                 ),
               ),
 
-
               Positioned(
-
                 top: 5,
                 left: 5,
 
                 child: Container(
-
-                  padding:
-                      const EdgeInsets.symmetric(
+                  padding: const EdgeInsets.symmetric(
                     horizontal: 5,
                     vertical: 3,
                   ),
 
-                  decoration:
-                      BoxDecoration(
-                    color:
-                        AppColors.orange,
-                    borderRadius:
-                        BorderRadius.circular(4),
+                  decoration: BoxDecoration(
+                    color: AppColors.orange,
+                    borderRadius: BorderRadius.circular(4),
                   ),
 
                   child: Text(
-
                     deal.discount,
 
-                    style:
-                        const TextStyle(
-                      color:
-                          Colors.white,
+                    style: const TextStyle(
+                      color: Colors.white,
                       fontSize: 7,
-                      fontWeight:
-                          FontWeight.bold,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
@@ -171,157 +109,108 @@ class _DealCard
             ],
           ),
 
-
           Padding(
-
-            padding:
-                const EdgeInsets.fromLTRB(
-              7,
-              5,
-              7,
-              6,
-            ),
+            padding: const EdgeInsets.fromLTRB(7, 5, 7, 6),
 
             child: Column(
-
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
 
               children: [
-
                 Text(
-
                   deal.name,
 
                   maxLines: 1,
 
-                  overflow:
-                      TextOverflow.ellipsis,
+                  overflow: TextOverflow.ellipsis,
 
-                  style:
-                      const TextStyle(
+                  style: const TextStyle(
                     fontSize: 9,
-                    fontWeight:
-                        FontWeight.w600,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-
 
                 const SizedBox(height: 2),
 
-
                 const Text(
-
                   '1kg (20-30 pcs/kg)',
 
-                  style:
-                      TextStyle(
-                    fontSize: 7,
-                    color:
-                        AppColors.muted,
-                  ),
+                  style: TextStyle(fontSize: 7, color: AppColors.muted),
                 ),
-
 
                 const SizedBox(height: 4),
 
-
                 Row(
-
                   children: [
-
                     Text(
-
                       deal.price,
 
-                      style:
-                          const TextStyle(
-                        color:
-                            AppColors.green,
+                      style: const TextStyle(
+                        color: AppColors.green,
                         fontSize: 10,
-                        fontWeight:
-                            FontWeight.w800,
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
 
                     const SizedBox(width: 4),
 
                     Flexible(
-
                       child: Text(
-
                         deal.oldPrice,
 
-                        overflow:
-                            TextOverflow.ellipsis,
+                        overflow: TextOverflow.ellipsis,
 
-                        style:
-                            const TextStyle(
-                          color:
-                              AppColors.muted,
+                        style: const TextStyle(
+                          color: AppColors.muted,
                           fontSize: 7,
-                          decoration:
-                              TextDecoration
-                                  .lineThrough,
+                          decoration: TextDecoration.lineThrough,
                         ),
                       ),
                     ),
                   ],
                 ),
 
-
                 const SizedBox(height: 3),
 
-
                 Row(
-
                   children: [
-
                     const Icon(
-
                       Icons.star_rounded,
 
-                      color:
-                          Color(0xFFFFB300),
+                      color: Color(0xFFFFB300),
 
                       size: 11,
                     ),
 
                     Text(
-
                       ' ${deal.rating} (${deal.reviews})',
 
-                      style:
-                          const TextStyle(
-                        fontSize: 7,
-                      ),
+                      style: const TextStyle(fontSize: 7),
                     ),
 
                     const Spacer(),
 
+                    InkWell(
+                      onTap: onAddToCart == null
+                          ? null
+                          : () => onAddToCart!(deal),
+                      borderRadius: BorderRadius.circular(20),
+                      child: Container(
+                        width: 22,
 
-                    Container(
+                        height: 22,
 
-                      width: 22,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFDDF6E9),
+                          shape: BoxShape.circle,
+                        ),
 
-                      height: 22,
+                        child: const Icon(
+                          Icons.add_rounded,
 
-                      decoration:
-                          const BoxDecoration(
-                        color:
-                            Color(0xFFDDF6E9),
-                        shape:
-                            BoxShape.circle,
-                      ),
+                          color: AppColors.green,
 
-                      child: const Icon(
-
-                        Icons.add_rounded,
-
-                        color:
-                            AppColors.green,
-
-                        size: 17,
+                          size: 17,
+                        ),
                       ),
                     ),
                   ],
