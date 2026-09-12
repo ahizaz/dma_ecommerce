@@ -1,4 +1,5 @@
 import 'package:dma_e_commerce/features/home/presentation/providers/home_provider.dart';
+import 'package:dma_e_commerce/features/home/presentation/screens/account_screen.dart';
 import 'package:dma_e_commerce/features/home/presentation/screens/cart_screen.dart';
 import 'package:dma_e_commerce/features/home/presentation/screens/explore_screen.dart';
 import 'package:dma_e_commerce/features/home/presentation/widgets/bottom_nav.dart';
@@ -41,7 +42,9 @@ class HomeScreen extends ConsumerWidget {
                   ref.read(homeProvider.notifier).changeBottomNav(1);
                 },
               )
-            : state.selectedBottomIndex >= 3
+            : state.selectedBottomIndex == 4
+            ? const AccountScreen()
+            : state.selectedBottomIndex == 3
             ? const SizedBox.expand()
             : Column(
                 children: [
