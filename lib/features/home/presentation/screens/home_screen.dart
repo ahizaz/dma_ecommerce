@@ -14,6 +14,7 @@ import 'package:dma_e_commerce/features/home/presentation/widgets/section_header
 import 'package:dma_e_commerce/features/home/presentation/widgets/seller_banner.dart';
 import 'package:dma_e_commerce/features/home/presentation/widgets/top_header.dart';
 import 'package:dma_e_commerce/features/home/presentation/widgets/trade_actions.dart';
+import 'package:dma_e_commerce/features/home/presentation/widgets/entrepreneur_network.dart';
 
 import 'package:dma_e_commerce/features/home/presentation/widgets/trade_opportunity.dart';
 import 'package:dma_e_commerce/core/theme/app_colors.dart';
@@ -143,6 +144,24 @@ class HomeScreen extends ConsumerWidget {
                                 const TradeActions(),
 
                                 const SizedBox(height: 11),
+
+                                EntrepreneurNetwork(
+                                  onConnect: (entrepreneurName) {
+                                    ref
+                                        .read(homeProvider.notifier)
+                                        .changeBottomNav(3);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          'Chat opened for $entrepreneurName',
+                                        ),
+                                        duration: const Duration(seconds: 2),
+                                      ),
+                                    );
+                                  },
+                                ),
+
+                                const SizedBox(height: 12),
 
                                 // =========================
                                 // FEATURED PRODUCTS
