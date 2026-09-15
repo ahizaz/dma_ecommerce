@@ -53,6 +53,7 @@ class HomeScreen extends ConsumerWidget {
                 onClearCart: () {
                   ref.read(homeProvider.notifier).clearCart();
                 },
+                onCheckout: () => _showCheckout(context, ref),
                 onBrowseProducts: () {
                   ref.read(homeProvider.notifier).changeBottomNav(1);
                 },
@@ -100,7 +101,11 @@ class HomeScreen extends ConsumerWidget {
 
                         const SizedBox(height: 9),
 
-                        const HomeSearchBar(),
+                        HomeSearchBar(
+                          onTap: () => ref
+                              .read(homeProvider.notifier)
+                              .changeBottomNav(1),
+                        ),
                       ],
                     ),
                   ),
@@ -180,6 +185,49 @@ class HomeScreen extends ConsumerWidget {
                                     );
                                   },
                                 ),
+
+                                if (state.favoriteProducts.isNotEmpty) ...[
+                                  const SizedBox(height: 12),
+
+                                  SectionHeader(
+                                    title: 'Saved for Later',
+                                    onViewAll: () => ref
+                                        .read(homeProvider.notifier)
+                                        .changeBottomNav(1),
+                                  ),
+
+                                  const SizedBox(height: 7),
+
+                                  FeaturedProducts(
+                                    products: state.featuredProducts
+                                        .where(
+                                          (product) => state.favoriteProducts
+                                              .contains(product.name),
+                                        )
+                                        .toList(),
+                                    favoriteProducts: state.favoriteProducts,
+                                    onToggleFavorite: (productName) {
+                                      ref
+                                          .read(homeProvider.notifier)
+                                          .toggleFavorite(productName);
+                                    },
+                                    onAddToCart: (product) {
+                                      ref
+                                          .read(homeProvider.notifier)
+                                          .addToCart(product);
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            '${product.name} added to cart',
+                                          ),
+                                          duration: const Duration(seconds: 2),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ],
 
                                 const SizedBox(height: 12),
 
@@ -275,5 +323,36 @@ class HomeScreen extends ConsumerWidget {
         cartCount: state.cartProducts.length,
       ),
     );
+  }
+
+  Future<void> _showCheckout(BuildContext context, WidgetRef ref) async {
+    final paymentMethod = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Confirm order'),
+        content: const Text(
+          'Choose a payment method to place this order. Delivery details can be updated from Account.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'Cash on delivery'),
+            child: const Text('Cash on delivery'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, 'Online payment'),
+            child: const Text('Pay online'),
+          ),
+        ],
+      ),
+    );
+    if (!context.mounted || paymentMethod == null) return;
+    ref.read(homeProvider.notifier).clearCart();
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('Order placed with $paymentMethod')));
   }
 }

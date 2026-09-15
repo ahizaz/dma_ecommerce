@@ -10,6 +10,7 @@ class CartScreen extends StatelessWidget {
   final ValueChanged<FeaturedProductModel> onIncreaseQuantity;
   final ValueChanged<FeaturedProductModel> onDecreaseQuantity;
   final VoidCallback onClearCart;
+  final VoidCallback? onCheckout;
 
   const CartScreen({
     super.key,
@@ -20,6 +21,7 @@ class CartScreen extends StatelessWidget {
     required this.onIncreaseQuantity,
     required this.onDecreaseQuantity,
     required this.onClearCart,
+    this.onCheckout,
   });
 
   @override
@@ -32,6 +34,7 @@ class CartScreen extends StatelessWidget {
         onIncreaseQuantity: onIncreaseQuantity,
         onDecreaseQuantity: onDecreaseQuantity,
         onClearCart: onClearCart,
+        onCheckout: onCheckout,
         onBrowseProducts: onBrowseProducts,
       );
     }
@@ -169,6 +172,7 @@ class _FilledCart extends StatelessWidget {
   final ValueChanged<FeaturedProductModel> onIncreaseQuantity;
   final ValueChanged<FeaturedProductModel> onDecreaseQuantity;
   final VoidCallback onClearCart;
+  final VoidCallback? onCheckout;
   final VoidCallback onBrowseProducts;
 
   const _FilledCart({
@@ -178,6 +182,7 @@ class _FilledCart extends StatelessWidget {
     required this.onIncreaseQuantity,
     required this.onDecreaseQuantity,
     required this.onClearCart,
+    this.onCheckout,
     required this.onBrowseProducts,
   });
 
@@ -311,15 +316,15 @@ class _FilledCart extends StatelessWidget {
                         width: double.infinity,
                         height: 46,
                         child: ElevatedButton.icon(
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'Checkout is ready for your order',
+                          onPressed:
+                              onCheckout ??
+                              () => ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'Checkout is ready for your order',
+                                  ),
                                 ),
                               ),
-                            );
-                          },
                           icon: const Icon(
                             Icons.lock_outline_rounded,
                             size: 17,

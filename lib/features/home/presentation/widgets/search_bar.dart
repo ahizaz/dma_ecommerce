@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class HomeSearchBar extends StatelessWidget {
-  const HomeSearchBar({super.key});
+  final VoidCallback? onTap;
+
+  const HomeSearchBar({super.key, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +21,8 @@ class HomeSearchBar extends StatelessWidget {
         ],
       ),
       child: TextField(
+        readOnly: onTap != null,
+        onTap: onTap,
         textAlignVertical: TextAlignVertical.center,
         decoration: InputDecoration(
           isDense: true,
@@ -26,10 +30,7 @@ class HomeSearchBar extends StatelessWidget {
           contentPadding: EdgeInsets.zero,
 
           hintText: 'What are you looking for?',
-          hintStyle: const TextStyle(
-            fontSize: 11,
-            color: Color(0xFF9CA2A6),
-          ),
+          hintStyle: const TextStyle(fontSize: 11, color: Color(0xFF9CA2A6)),
 
           prefixIcon: const Icon(
             Icons.search_rounded,

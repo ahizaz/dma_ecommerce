@@ -21,6 +21,8 @@ class ExploreScreen extends StatefulWidget {
 class _ExploreScreenState extends State<ExploreScreen> {
   final searchController = TextEditingController();
   String selectedIntent = 'All';
+  double minimumRating = 0;
+  bool sortByPrice = false;
 
   @override
   void dispose() {
@@ -31,11 +33,19 @@ class _ExploreScreenState extends State<ExploreScreen> {
   @override
   Widget build(BuildContext context) {
     final query = searchController.text.trim().toLowerCase();
-    final products = widget.products.where((product) {
-      return query.isEmpty ||
-          product.name.toLowerCase().contains(query) ||
-          product.supplier.toLowerCase().contains(query);
-    }).toList();
+    final products = widget.products
+        .where((product) {
+          return query.isEmpty ||
+              product.name.toLowerCase().contains(query) ||
+              product.supplier.toLowerCase().contains(query);
+        })
+        .where((product) => product.rating >= minimumRating)
+        .toList();
+    if (sortByPrice) {
+      products.sort(
+        (first, second) => _priceOf(first).compareTo(_priceOf(second)),
+      );
+    }
 
     return Column(
       children: [
@@ -74,7 +84,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                   ),
                   const Spacer(),
                   IconButton(
-                    onPressed: () {},
+                    onPressed: _showFilters,
                     icon: const Icon(Icons.tune_rounded),
                     color: AppColors.green,
                     tooltip: 'Filter discovery',
@@ -144,6 +154,108 @@ class _ExploreScreenState extends State<ExploreScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  double _priceOf(FeaturedProductModel product) {
+    return double.tryParse(product.price.replaceAll(RegExp(r'[^0-9.]'), '')) ??
+        0;
+  }
+
+  Future<void> _showFilters() async {
+    final result = await showModalBottomSheet<_ExploreFilterValues>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) => _ExploreFilterSheet(
+        minimumRating: minimumRating,
+        sortByPrice: sortByPrice,
+      ),
+    );
+    if (!mounted || result == null) return;
+    setState(() {
+      minimumRating = result.minimumRating;
+      sortByPrice = result.sortByPrice;
+    });
+  }
+}
+
+class _ExploreFilterValues {
+  final double minimumRating;
+  final bool sortByPrice;
+
+  const _ExploreFilterValues({
+    required this.minimumRating,
+    required this.sortByPrice,
+  });
+}
+
+class _ExploreFilterSheet extends StatefulWidget {
+  final double minimumRating;
+  final bool sortByPrice;
+
+  const _ExploreFilterSheet({
+    required this.minimumRating,
+    required this.sortByPrice,
+  });
+
+  @override
+  State<_ExploreFilterSheet> createState() => _ExploreFilterSheetState();
+}
+
+class _ExploreFilterSheetState extends State<_ExploreFilterSheet> {
+  late double minimumRating = widget.minimumRating;
+  late bool sortByPrice = widget.sortByPrice;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(18, 0, 18, 18),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Filter products',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+            ),
+            const SizedBox(height: 10),
+            const Text(
+              'Minimum rating',
+              style: TextStyle(color: AppColors.muted, fontSize: 12),
+            ),
+            Wrap(
+              spacing: 7,
+              children: [0.0, 4.0, 4.5].map((rating) {
+                return ChoiceChip(
+                  label: Text(rating == 0 ? 'Any' : '$rating+'),
+                  selected: minimumRating == rating,
+                  onSelected: (_) => setState(() => minimumRating = rating),
+                );
+              }).toList(),
+            ),
+            SwitchListTile.adaptive(
+              contentPadding: EdgeInsets.zero,
+              title: const Text('Lowest price first'),
+              value: sortByPrice,
+              onChanged: (value) => setState(() => sortByPrice = value),
+            ),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: () => Navigator.pop(
+                  context,
+                  _ExploreFilterValues(
+                    minimumRating: minimumRating,
+                    sortByPrice: sortByPrice,
+                  ),
+                ),
+                child: const Text('Apply filters'),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
